@@ -1,0 +1,170 @@
+---
+title: "AgentLine Toolkit"
+description: "Integrate with AgentLine to give your AI agents real phone numbers for making calls and reading SMS messages."
+---
+
+import DetailsTable from "@site/src/components/DetailsTable";
+
+<DetailsTable
+  data={{
+    Class: "`langchain_agentline.AgentLineToolkit`",
+    Package: "`langchain-agentline`",
+    Serializable: "Yes",
+    "JS support": "No",
+  }}
+/>
+
+export const Install = () => (
+  <a href="https://pypi.org/project/langchain-agentline/">
+    <img
+      src="https://img.shields.io/pypi/v/langchain-agentline?style=flat-square"
+      alt="PyPI version"
+    />
+  </a>
+);
+
+<Install />
+
+## Overview
+
+[AgentLine](https://agentline.cloud) gives AI agents real phone numbers. Your LangChain agents can make outbound phone calls, have natural voice conversations, and read inbound SMS messages — all through a real US phone number.
+
+**Costs:** calls at $0.10/min, phone numbers $2.00 one-time.
+
+### Available tools
+
+| Tool | Description |
+|---|---|
+| `agentline_make_call` | Make an outbound phone call with an AI voice agent |
+| `agentline_get_calls` | List calls, check status, and retrieve transcripts |
+| `agentline_get_messages` | Read inbound SMS messages received by your phone number |
+| `agentline_list_agents` | List all configured agents and their phone numbers |
+
+:::note
+Outbound SMS sending and WhatsApp messaging are not currently supported by the AgentLine API. Only inbound SMS reading and outbound voice calls are available at this time.
+:::
+
+## Features
+
+| Feature | Supported |
+|---|---|
+| Outbound voice calls | ✅ |
+| Inbound SMS reading | ✅ |
+| Call transcripts | ✅ |
+| Multiple agents | ✅ |
+| Outbound SMS/MMS | ❌ |
+| WhatsApp | ❌ |
+
+## Setup
+
+### Credentials
+
+Get your API key from the [AgentLine dashboard](https://agentline.cloud). Set it as an environment variable:
+
+```python
+import getpass
+import os
+
+if not os.environ.get("AGENTLINE_API_KEY"):
+    os.environ["AGENTLINE_API_KEY"] = getpass.getpass("Enter your AgentLine API key: ")
+```
+
+You can also pass the key directly to the toolkit:
+
+```python
+from langchain_agentline import AgentLineToolkit
+
+toolkit = AgentLineToolkit(api_key="sk_live_your_key")
+```
+
+### Installation
+
+```bash
+pip install -U langchain-agentline
+```
+
+## Instantiation
+
+### Using the toolkit (recommended)
+
+```python
+from langchain_agentline import AgentLineToolkit
+
+toolkit = AgentLineToolkit()
+tools = toolkit.get_tools()
+```
+
+### Select specific tools
+
+```python
+toolkit = AgentLineToolkit(
+    selected_tools=[
+        "agentline_make_call",
+        "agentline_get_calls",
+    ]
+)
+tools = toolkit.get_tools()
+```
+
+### Individual tools
+
+```python
+from langchain_agentline import AgentLineCallTool, AgentLineGetMessagesTool
+
+call_tool = AgentLineCallTool()
+sms_tool = AgentLineGetMessagesTool()
+```
+
+## Invocation
+
+### Direct invocation
+
+```python
+# Make a call
+call_tool = AgentLineCallTool()
+result = call_tool.invoke({
+    "agent_id": "agt_abc123",
+    "to_number": "+15551234567",
+    "initial_greeting": "Hi, I'm calling to confirm your appointment at 3pm.",
+})
+
+# Check your messages
+sms_tool = AgentLineGetMessagesTool()
+messages = sms_tool.invoke({"limit": 10})
+```
+
+### Within a LangGraph agent
+
+```python
+from langgraph.prebuilt import create_react_agent
+from langchain_openai import ChatOpenAI
+
+from langchain_agentline import AgentLineToolkit
+
+toolkit = AgentLineToolkit()
+tools = toolkit.get_tools()
+
+agent = create_react_agent(ChatOpenAI(model="gpt-4o"), tools)
+
+# Ask the agent to call someone
+result = agent.invoke({
+    "messages": [
+        {"role": "user", "content": "Call +15551234567 and tell them their package has shipped."}
+    ]
+})
+
+# Ask the agent to check messages
+result = agent.invoke({
+    "messages": [
+        {"role": "user", "content": "Check if I have any new text messages."}
+    ]
+})
+```
+
+:::tip
+Before making calls, use `agentline_list_agents` to find your agent IDs. You'll need an agent configured with a phone number in the AgentLine dashboard.
+:::
+
+## API reference
+
+For full API details, see the [AgentLine API documentation](https://docs.agentline.cloud).
