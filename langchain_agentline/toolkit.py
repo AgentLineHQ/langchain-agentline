@@ -13,21 +13,43 @@ from pydantic import BaseModel, Field
 
 from langchain_agentline.tools import (
     AgentLineCallTool,
+    AgentLineDeleteWebhookTool,
+    AgentLineGetBalanceTool,
     AgentLineGetCallsTool,
     AgentLineGetMessagesTool,
+    AgentLineGetNumbersTool,
+    AgentLineGetTranscriptTool,
+    AgentLineHangupCallTool,
     AgentLineListAgentsTool,
+    AgentLineListWebhooksTool,
+    AgentLineProvisionNumberTool,
+    AgentLineSetWebhookTool,
 )
 
 ALL_TOOLS: dict[str, type[BaseTool]] = {
+    # Calls
     "agentline_make_call": AgentLineCallTool,
     "agentline_get_calls": AgentLineGetCallsTool,
+    "agentline_get_transcript": AgentLineGetTranscriptTool,
+    "agentline_hangup_call": AgentLineHangupCallTool,
+    # SMS
     "agentline_get_messages": AgentLineGetMessagesTool,
+    # Phone numbers
+    "agentline_provision_number": AgentLineProvisionNumberTool,
+    "agentline_get_numbers": AgentLineGetNumbersTool,
+    # Agents
     "agentline_list_agents": AgentLineListAgentsTool,
+    # Webhooks
+    "agentline_set_webhook": AgentLineSetWebhookTool,
+    "agentline_list_webhooks": AgentLineListWebhooksTool,
+    "agentline_delete_webhook": AgentLineDeleteWebhookTool,
+    # Billing
+    "agentline_get_balance": AgentLineGetBalanceTool,
 }
 
 
 class AgentLineToolkit(BaseModel):
-    """Collection of AgentLine tools for making calls and reading SMS.
+    """Collection of AgentLine tools for calls, SMS, webhooks, and billing.
 
     Set up with your API key and use `get_tools()` to get a list of
     LangChain tools ready for use with any agent.
@@ -40,7 +62,8 @@ class AgentLineToolkit(BaseModel):
         # Or select specific tools
         tools = toolkit.get_tools(selected_tools=[
             "agentline_make_call",
-            "agentline_get_calls",
+            "agentline_get_transcript",
+            "agentline_get_balance",
         ])
     """
 
@@ -53,8 +76,10 @@ class AgentLineToolkit(BaseModel):
         default=None,
         description=(
             "Optional list of tool names to include. If None, all tools are loaded. "
-            "Available: agentline_make_call, agentline_get_calls, "
-            "agentline_get_messages, agentline_list_agents."
+            "Available: agentline_make_call, agentline_get_calls, agentline_get_transcript, "
+            "agentline_hangup_call, agentline_get_messages, agentline_provision_number, "
+            "agentline_get_numbers, agentline_list_agents, agentline_set_webhook, "
+            "agentline_list_webhooks, agentline_delete_webhook, agentline_get_balance."
         ),
     )
 

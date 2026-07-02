@@ -1,6 +1,6 @@
 # langchain-agentline
 
-LangChain integration for [AgentLine](https://agentline.cloud) — give your AI agents real phone numbers to make calls and read SMS messages.
+LangChain integration for [AgentLine](https://agentline.cloud) — give your AI agents real phone numbers to make calls, read SMS, set up webhooks, and provision numbers.
 
 ## Installation
 
@@ -23,23 +23,31 @@ from langchain_openai import ChatOpenAI
 
 agent = create_react_agent(ChatOpenAI(), tools)
 result = agent.invoke({
-    "messages": [{"role": "user", "content": "Call +15551234567 and tell them the meeting is at 3pm"}]
+    "messages": [{"role": "user", "content": "Provision a phone number and call +15551234567"}]
 })
 ```
 
-## Available Tools
+## Available Tools (12 tools across 5 categories)
 
-| Tool | Description |
-|---|---|
-| `agentline_make_call` | Make an outbound phone call from an AgentLine agent |
-| `agentline_get_calls` | List recent calls and get transcripts |
-| `agentline_get_messages` | Read inbound SMS messages |
-| `agentline_list_agents` | List your configured agents and their phone numbers |
+| Category | Tool | Description |
+|---|---|---|
+| **Calls** | `agentline_make_call` | Make outbound voice calls ($0.10/min) |
+| | `agentline_get_calls` | List/filter calls by status |
+| | `agentline_get_transcript` | Fetch call transcripts |
+| | `agentline_hangup_call` | Hang up active calls |
+| **SMS** | `agentline_get_messages` | Read inbound SMS messages |
+| **Numbers** | `agentline_provision_number` | Buy a phone number ($2 one-time) |
+| | `agentline_get_numbers` | List all phone numbers |
+| **Webhooks** | `agentline_set_webhook` | Real-time event webhooks |
+| | `agentline_list_webhooks` | List configured webhooks |
+| | `agentline_delete_webhook` | Remove a webhook |
+| **Billing** | `agentline_get_balance` | Check account balance |
+| **Agents** | `agentline_list_agents` | List agents and their numbers |
 
 ## Setup
 
 1. Sign up at [agentline.cloud](https://agentline.cloud)
-2. Create an agent and provision a phone number
+2. Create an agent and copy your API key
 3. Set your API key: `export AGENTLINE_API_KEY=sk_live_...`
 
 ## Requirements
